@@ -9,7 +9,7 @@
 
 <h2>What it do?</h2>
 <p>
-  Calculates the time you've been on Earth and it gives you an average lifespan you still have based on generic questions.
+  It uses the time you have been on Earth and your habits and provides an average life expectancy that you still have based on generic questions.
 </p>
 
 <h3>GUI:</h3>
