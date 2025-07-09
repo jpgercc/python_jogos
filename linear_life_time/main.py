@@ -1,5 +1,6 @@
 import datetime
 from dateutil.relativedelta import relativedelta
+import streamlit as st
 
 
 def calculate_age(birth_date):
@@ -366,5 +367,388 @@ def main():
     print("O mais importante é focar em uma vida saudável e com qualidade! 🌟")
 
 
+def streamlit_app():
+    """Interface Streamlit para a calculadora de expectativa de vida"""
+    st.set_page_config(
+        page_title="Calculadora de Expectativa de Vida", 
+        page_icon="📊",
+        layout="wide"
+    )
+    
+    st.title("📊 Calculadora Avançada de Expectativa de Vida")
+    st.markdown("---")
+    
+    # Sidebar com informações
+    st.sidebar.title("ℹ️ Sobre")
+    st.sidebar.markdown("""
+    Esta calculadora estima sua expectativa de vida baseada em:
+    - Dados demográficos
+    - Hábitos de vida
+    - Histórico familiar
+    - Avanços médicos futuros
+    """)
+    
+    st.sidebar.warning("⚠️ Esta é apenas uma estimativa estatística. Consulte sempre profissionais de saúde.")
+    
+    # Seção 1: Informações Básicas
+    st.header("📅 Informações Básicas")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        year_birth = st.number_input("Ano de nascimento", min_value=1900, max_value=2025, value=1990)
+        month_birth = st.selectbox("Mês de nascimento", range(1, 13), index=0)
+        
+    with col2:
+        day_birth = st.number_input("Dia de nascimento", min_value=1, max_value=31, value=1)
+        hour_birth = st.number_input("Hora de nascimento (0-23h)", min_value=0, max_value=23, value=12)
+    
+    # Seção 2: Informações de Saúde
+    st.header("🏥 Informações de Saúde")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Dados Básicos")
+        gender = st.selectbox("Gênero", ["Masculino", "Feminino", "Outro"], index=0)
+        country = st.selectbox("País", ["Brazil", "World"], index=0)
+        
+        st.subheader("Fatores de Risco")
+        smoking = st.checkbox("Fuma?")
+        smoking_intensity = None
+        if smoking:
+            smoking_intensity = st.selectbox(
+                "Intensidade do tabagismo",
+                ["Leve (<10 cigarros/dia)", "Moderado (10-20 cigarros/dia)", "Pesado (>20 cigarros/dia)"]
+            )
+        
+        alcohol = st.selectbox(
+            "Consumo de álcool",
+            ["Não bebo", "Ocasional (1-2x/semana)", "Moderado (1-2 drinks/dia)", "Pesado (>2 drinks/dia)"]
+        )
+        
+        obesity = st.checkbox("Acima do peso?")
+        bmi_category = None
+        if obesity:
+            bmi_category = st.selectbox(
+                "Grau de sobrepeso",
+                ["Sobrepeso leve", "Obesidade moderada", "Obesidade severa"]
+            )
+        
+        diabetes = st.checkbox("Tem diabetes?")
+        hypertension = st.checkbox("Tem pressão alta?")
+        heart_disease = st.checkbox("Tem doença cardíaca?")
+    
+    with col2:
+        st.subheader("Hábitos Saudáveis")
+        healthy_diet = st.checkbox("Mantém dieta saudável?")
+        diet_quality = None
+        if healthy_diet:
+            diet_quality = st.selectbox(
+                "Qualidade da dieta",
+                ["Básica (evito fast food)", "Boa (bastante frutas/vegetais)", "Excelente (dieta balanceada/orgânica)"]
+            )
+        
+        regular_exercise = st.checkbox("Pratica exercícios regularmente?")
+        exercise_intensity = None
+        if regular_exercise:
+            exercise_intensity = st.selectbox(
+                "Intensidade dos exercícios",
+                ["Leve (1-2x/semana)", "Moderado (3-4x/semana)", "Intenso (5+x/semana)"]
+            )
+        
+        good_sleep = st.checkbox("Dorme bem (7-8h por noite)?")
+        stress_management = st.checkbox("Consegue gerenciar bem o estresse?")
+        social_connections = st.checkbox("Tem boas conexões sociais/familiares?")
+        regular_checkups = st.checkbox("Faz checkups médicos regulares?")
+        
+        st.subheader("Histórico Familiar")
+        family_longevity = st.selectbox(
+            "Longevidade familiar",
+            ["Baixa (parentes morreram cedo)", "Média (expectativa normal)", "Alta (parentes viveram >85 anos)"]
+        )
+    
+    # Botão para calcular
+    if st.button("🔍 Calcular Expectativa de Vida", type="primary"):
+        try:
+            # Criar objeto datetime
+            birth_date = datetime.datetime(year_birth, month_birth, day_birth, hour_birth)
+            
+            # Calcular idade
+            years, months, days = calculate_age(birth_date)
+            
+            # Mapear valores do Streamlit para o formato da função
+            gender_map = {"Masculino": "male", "Feminino": "female", "Outro": "other"}
+            alcohol_map = {
+                "Não bebo": "none",
+                "Ocasional (1-2x/semana)": "light", 
+                "Moderado (1-2 drinks/dia)": "moderate",
+                "Pesado (>2 drinks/dia)": "heavy"
+            }
+            
+            smoking_intensity_map = {
+                "Leve (<10 cigarros/dia)": "light",
+                "Moderado (10-20 cigarros/dia)": "moderate", 
+                "Pesado (>20 cigarros/dia)": "heavy"
+            }
+            
+            bmi_map = {
+                "Sobrepeso leve": "mild",
+                "Obesidade moderada": "moderate",
+                "Obesidade severa": "severe"
+            }
+            
+            diet_map = {
+                "Básica (evito fast food)": "basic",
+                "Boa (bastante frutas/vegetais)": "good",
+                "Excelente (dieta balanceada/orgânica)": "excellent"
+            }
+            
+            exercise_map = {
+                "Leve (1-2x/semana)": "light",
+                "Moderado (3-4x/semana)": "moderate",
+                "Intenso (5+x/semana)": "high"
+            }
+            
+            family_map = {
+                "Baixa (parentes morreram cedo)": "low",
+                "Média (expectativa normal)": "average",
+                "Alta (parentes viveram >85 anos)": "high"
+            }
+            
+            # Construir dicionário de fatores de saúde
+            health_factors = {
+                "gender": gender_map[gender],
+                "smoking": smoking,
+                "alcohol": alcohol_map[alcohol],
+                "obesity": obesity,
+                "diabetes": diabetes,
+                "hypertension": hypertension,
+                "heart_disease": heart_disease,
+                "healthy_diet": healthy_diet,
+                "regular_exercise": regular_exercise,
+                "good_sleep": good_sleep,
+                "stress_management": stress_management,
+                "social_connections": social_connections,
+                "regular_checkups": regular_checkups,
+                "family_longevity": family_map[family_longevity]
+            }
+            
+            # Adicionar intensidades se aplicável
+            if smoking and smoking_intensity:
+                health_factors["smoking_intensity"] = smoking_intensity_map[smoking_intensity]
+            if obesity and bmi_category:
+                health_factors["bmi_category"] = bmi_map[bmi_category]
+            if healthy_diet and diet_quality:
+                health_factors["diet_quality"] = diet_map[diet_quality]
+            if regular_exercise and exercise_intensity:
+                health_factors["exercise_intensity"] = exercise_map[exercise_intensity]
+            
+            # Calcular expectativa
+            remaining_years, total_expectancy, health_score, medical_bonus, applied_advances = estimate_life_expectancy(
+                years, health_factors["gender"], health_factors, country
+            )
+            
+            # Exibir resultados
+            st.markdown("---")
+            st.header("📊 Resultados da Análise")
+            
+            # Métricas principais
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("🎂 Idade Atual", f"{years} anos")
+                st.caption(f"{months} meses e {days} dias")
+            
+            with col2:
+                st.metric("📈 Expectativa Total", f"{total_expectancy:.1f} anos")
+                
+            with col3:
+                st.metric("⏰ Anos Restantes", f"{remaining_years:.1f} anos")
+                
+            with col4:
+                estimated_death = datetime.datetime.now() + relativedelta(years=int(remaining_years))
+                st.metric("📅 Data Estimada", estimated_death.strftime("%Y"))
+                st.caption(estimated_death.strftime("%B"))
+            
+            # Detalhes dos scores
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("📊 Score de Saúde")
+                score_color = "green" if health_score >= 5 else "orange" if health_score >= 0 else "red"
+                st.markdown(f"<h3 style='color: {score_color};'>{health_score:+.0f} anos</h3>", unsafe_allow_html=True)
+                
+                if health_score >= 10:
+                    st.success("🟢 Excelente! Seus hábitos de vida são muito saudáveis.")
+                elif health_score >= 5:
+                    st.info("🟡 Bom! Você tem hábitos saudáveis com margem para melhorias.")
+                elif health_score >= 0:
+                    st.warning("🟠 Moderado. Considere melhorar alguns hábitos de vida.")
+                elif health_score >= -5:
+                    st.error("🔴 Atenção! Alguns fatores de risco importantes identificados.")
+                else:
+                    st.error("🚨 Crítico! Múltiplos fatores de risco. Procure ajuda médica.")
+            
+            with col2:
+                st.subheader("🔬 Bônus Médico")
+                st.markdown(f"<h3 style='color: blue;'>+{medical_bonus:.1f} anos</h3>", unsafe_allow_html=True)
+                st.caption("Baseado em avanços médicos esperados")
+            
+            # Detalhes dos avanços médicos
+            if applied_advances:
+                st.subheader("🔬 Avanços Médicos Considerados")
+                for advance in applied_advances:
+                    with st.expander(f"📅 {advance['year']}: +{advance['bonus']:.1f} anos"):
+                        st.write(f"💡 {advance['description']}")
+            
+            # Gráfico de expectativa
+            st.subheader("📈 Visualização da Expectativa de Vida")
+            
+            # Criar dois tipos de gráficos mais informativos
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("🍰 Composição da Expectativa")
+                # Gráfico de pizza mostrando os componentes
+                import matplotlib.pyplot as plt
+                
+                base_expectancy = get_base_life_expectancy(years, health_factors["gender"], country)
+                components = []
+                labels = []
+                colors = []
+                
+                # Expectativa base
+                components.append(base_expectancy)
+                labels.append(f'Expectativa base\n({base_expectancy:.1f} anos)')
+                colors.append('#808080')
+                
+                # Ajuste de saúde (pode ser positivo ou negativo)
+                if health_score > 0:
+                    components.append(health_score)
+                    labels.append(f'Hábitos saudáveis\n(+{health_score:.1f} anos)')
+                    colors.append('#4CAF50')
+                elif health_score < 0:
+                    components.append(abs(health_score))
+                    labels.append(f'Fatores de risco\n({health_score:.1f} anos)')
+                    colors.append('#F44336')
+                
+                # Bônus médico
+                if medical_bonus > 0:
+                    components.append(medical_bonus)
+                    labels.append(f'Avanços médicos\n(+{medical_bonus:.1f} anos)')
+                    colors.append('#2196F3')
+                
+                fig1, ax1 = plt.subplots(figsize=(8, 6))
+                wedges, texts, autotexts = ax1.pie(components, labels=labels, colors=colors, 
+                                                  autopct='%1.1f%%', startangle=90)
+                ax1.set_title('Composição da Expectativa de Vida')
+                
+                st.pyplot(fig1)
+            
+            with col2:
+                st.subheader("📊 Linha do Tempo da Vida")
+                # Gráfico de barras horizontais mostrando a vida
+                import numpy as np
+                
+                fig2, ax2 = plt.subplots(figsize=(8, 6))
+                
+                # Barra da vida total
+                total_bar_width = 0.6
+                
+                # Vida já vivida (verde)
+                ax2.barh(1, years, height=total_bar_width, color='#4CAF50', 
+                        label=f'Vida vivida ({years} anos)', alpha=0.8)
+                
+                # Vida restante (azul claro)
+                ax2.barh(1, remaining_years, left=years, height=total_bar_width, 
+                        color='#81C784', label=f'Vida restante ({remaining_years:.1f} anos)', alpha=0.8)
+                
+                # Expectativa base como referência (linha)
+                base_exp = get_base_life_expectancy(years, health_factors["gender"], country)
+                ax2.axvline(x=base_exp, color='gray', linestyle='--', 
+                           label=f'Expectativa base ({base_exp:.1f} anos)')
+                
+                # Marcos importantes
+                if years < 65:
+                    ax2.axvline(x=65, color='orange', linestyle=':', alpha=0.7, label='Aposentadoria (65)')
+                if total_expectancy > 80:
+                    ax2.axvline(x=80, color='purple', linestyle=':', alpha=0.7, label='80 anos')
+                
+                ax2.set_xlim(0, max(100, total_expectancy + 5))
+                ax2.set_ylim(0.5, 1.5)
+                ax2.set_xlabel('Idade (anos)')
+                ax2.set_title('Linha do Tempo da Sua Vida')
+                ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+                ax2.set_yticks([])
+                ax2.grid(True, alpha=0.3, axis='x')
+                
+                # Adicionar anotações
+                ax2.annotate(f'Você está aqui\n({years} anos)', 
+                           xy=(years, 1), xytext=(years, 1.3),
+                           ha='center', va='bottom',
+                           arrowprops=dict(arrowstyle='->', color='red'),
+                           fontsize=10, color='red', weight='bold')
+                
+                ax2.annotate(f'Expectativa final\n({total_expectancy:.1f} anos)', 
+                           xy=(total_expectancy, 1), xytext=(total_expectancy, 0.7),
+                           ha='center', va='top',
+                           arrowprops=dict(arrowstyle='->', color='blue'),
+                           fontsize=10, color='blue', weight='bold')
+                
+                plt.tight_layout()
+                st.pyplot(fig2)
+            
+            # Gráfico adicional: Comparação com médias
+            st.subheader("📈 Comparação com Médias Populacionais")
+            
+            fig3, ax3 = plt.subplots(figsize=(12, 6))
+            
+            categories = ['Expectativa\nBase', 'Média\nMundial', 'Sua\nExpectativa']
+            base_exp = get_base_life_expectancy(years, health_factors["gender"], country)
+            world_exp = get_base_life_expectancy(years, health_factors["gender"], "World")
+            
+            values = [base_exp, world_exp, total_expectancy]
+            colors = ['#FFC107', '#FF9800', '#4CAF50']
+            
+            bars = ax3.bar(categories, values, color=colors, alpha=0.8)
+            
+            # Adicionar valores nas barras
+            for bar, value in zip(bars, values):
+                height = bar.get_height()
+                ax3.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                        f'{value:.1f} anos', ha='center', va='bottom', fontweight='bold')
+            
+            ax3.set_ylabel('Expectativa de Vida (anos)')
+            ax3.set_title('Comparação de Expectativa de Vida')
+            ax3.grid(True, alpha=0.3, axis='y')
+            ax3.set_ylim(0, max(values) + 10)
+            
+            # Destacar a diferença
+            if total_expectancy > base_exp:
+                diff = total_expectancy - base_exp
+                ax3.annotate(f'+{diff:.1f} anos\nacima da base!', 
+                           xy=(2, total_expectancy), xytext=(2.3, total_expectancy),
+                           ha='left', va='center',
+                           arrowprops=dict(arrowstyle='->', color='green'),
+                           fontsize=12, color='green', weight='bold',
+                           bbox=dict(boxstyle="round,pad=0.3", facecolor='lightgreen', alpha=0.7))
+            
+            st.pyplot(fig3)
+            
+        except Exception as e:
+            st.error(f"Erro no cálculo: {str(e)}")
+            st.error("Verifique se todas as datas são válidas.")
+
+
+# Executar a app Streamlit se o script for chamado com streamlit
 if __name__ == "__main__":
-    main()
+    # Verificar se está rodando no Streamlit
+    try:
+        # Esta é uma forma de detectar se estamos no Streamlit
+        import sys
+        if 'streamlit' in sys.modules:
+            streamlit_app()
+        else:
+            main()
+    except:
+        main()
